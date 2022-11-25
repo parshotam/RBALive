@@ -1,0 +1,6 @@
+module Pods_RBALive {
+  umbrella header "Pods-RBALive-umbrella.h"
+
+  export *
+  module * { export * }
+}

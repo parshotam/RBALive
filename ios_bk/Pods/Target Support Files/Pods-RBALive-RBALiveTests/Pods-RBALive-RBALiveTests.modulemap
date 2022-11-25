@@ -1,0 +1,6 @@
+module Pods_RBALive_RBALiveTests {
+  umbrella header "Pods-RBALive-RBALiveTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
