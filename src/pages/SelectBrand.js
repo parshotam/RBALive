@@ -8,7 +8,7 @@ import { Button } from 'react-native-paper';
 import DrawerContent from '../components/DrawerContent.js';
 import bkking from '../../assets/Burger-King.png';
 import menu from '../../assets/img/menu_new.png';
-import pope from '../../assets/img/pope.png';
+import pope from '../../assets/img/Popeyes.jpeg';
 import testheader from '../../assets/img/testheader.png';
 import { block } from "react-native-reanimated";
 import bugerGif from '../../assets/rba-R-02.png';
@@ -68,7 +68,7 @@ const SelectBrand = ({navigation}) => {
         > */}
           <TouchableOpacity activeOpacity={.9}  onPress={() => setOpen(false)} >
         <View style={styles.topheader} onPress={() => setOpen(false)}>
-        <ImageBackground imageStyle={{ backgroundColor: '#fff'}} style={styles.imageback} source={testheader} resizeMode="cover" ></ImageBackground>
+          <ImageBackground imageStyle={{ backgroundColor: '#fff'}} style={styles.imageback} source={testheader} resizeMode="cover" ></ImageBackground>
             
             {/* <TouchableOpacity style={styles.MenuIcon} onPress={() => setOpen(true)}><Image
                 // style={styles.MenuIcon}
@@ -77,7 +77,7 @@ const SelectBrand = ({navigation}) => {
             <Image
                 style={styles.bkking2}
                 source={bugerGif}
-            />
+          />
         </View>
         {/* <View style={styles.header}>
             <Image
@@ -113,6 +113,17 @@ const SelectBrand = ({navigation}) => {
             </TouchableOpacity>
         )
         })}
+        <TouchableOpacity  >
+            <View style={styles.selectbrand}>
+                <View style={styles.brandround}>
+                <Image
+                    style={styles.bkking}
+                    source={pope}
+                />
+                </View>
+            </View>
+        </TouchableOpacity>
+        
             {/* <Text style={styles.brandtype}>India Limited</Text> */}
             {/* <View style={styles.selectbrand}>
                 <View style={styles.brandround}>
@@ -152,7 +163,8 @@ const styles = StyleSheet.create({
   },
     topheader:{
         display: "flex",
-        height:140
+        height:140,
+        justifyContent: "center",
       },
       imageback:{
         flex: 1, width:'100%', height:140, justifyContent: "center"
@@ -264,13 +276,24 @@ const styles = StyleSheet.create({
       brandList:{
         flexDirection: 'row',
         flexWrap: 'wrap',
-        width: '100%',
+        width: '86%',
         // borderWidth:1,
+        textAlign: 'center',
         // borderColor:'green',
-        padding:20
+        // padding:20,
+        paddingLeft:'auto',
+        paddingRight:'auto',
+        marginLeft:'auto',
+        marginRight:'auto',
+        marginStart:'auto',
+        marginEnd: 'auto',
+        flex:1,
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        // marginRight:'auto'
         // flexDirection: 'row',
-        // flexWrap: 'wrap',
-        // display: "flex",
+        flexWrap: 'wrap',
+        display: "flex",
         // flexDirection: "row",
       },
       brandround:{

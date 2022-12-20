@@ -22,7 +22,7 @@ import down_icon from '../../assets/img/down_icon.png';
 import calendar from '../../assets/img/calendar.png';
 import vector_line from '../../assets/img/vector_line.png';
 import Vector_line_down from '../../assets/img/Vector_line_down.png';
-
+import rbaImg from '../../assets/rba-R-02.png';
 import vector_up from '../../assets/img/vector_up.png';
 import vector_down from '../../assets/img/vector_down.png';
 import { getRelativeCoords } from "react-native-reanimated";
@@ -52,6 +52,13 @@ let minutes = (new Date().getMinutes() < 10 ? '0' : '') + new Date().getMinutes(
 const new_dt = date + ' ' + months[month] + ' ' + year //+', '+hours+':'+minutes;
 const current_dt = year + '-' + digitmonth + '-' + date;
 
+let selectedRegion='';
+let selectedCity='';
+let selectedDate='';
+let selectedType='';
+let reportType = '';
+let mainRegion = '';
+
 const NewHome = ({route, navigation}) => {
   // console.log('route.params = ',route.params)
   const childRef = useRef();
@@ -65,12 +72,15 @@ const NewHome = ({route, navigation}) => {
   
   const [selectedtype, setSelectedtype] = React.useState('Day');
   const [resultdata, setResultdata] = React.useState([]);
+  const [resultfulldata, setResultfulldata] = React.useState({});
   const [open, setOpen] = React.useState(false);
   const [opencalendar, setOpencalendar] = React.useState(false);
   const [regionType, setRegionType] = React.useState('Full');
   const [drawer, setDrawer] = React.useState('');
   const [confirmdate, setConfirmdate] = React.useState(current_dt);
   const [type, setType] = React.useState('day');
+  const [reqtype, setReqtype] = React.useState('Full');
+  const [cityname, setCityname] = React.useState('');
   // const [open, setOpen] = React.useState(false);
   const [isloading, setIsloading] = React.useState(false);
   const [spin, setSpin] = React.useState(true);
@@ -80,15 +90,18 @@ const NewHome = ({route, navigation}) => {
   const [iscollaps1, setIscollaps1] = React.useState(true);
   const [iscollaps2, setIscollaps2] = React.useState(true);
   const [iscollaps3, setIscollaps3] = React.useState(true);
+  const [subregion, setSubregion] = React.useState(false);
   const [businesstype, setBusinesstype] = React.useState({});
   const [isregion, setIsregion] = React.useState(false);
   const [expandedRows, setExpandedRows] = React.useState([]);
   const [expandState, setExpandState] = React.useState({});
 
   const handleEpandRow = (event, userId) => {
-    const currentExpandedRows = expandedRows;
+    let currentExpandedRows = expandedRows;
+    if (!currentExpandedRows.includes(userId)){
+      currentExpandedRows=[]
+    }
     const isRowExpanded = currentExpandedRows.includes(userId);
-
     let obj = {};
     isRowExpanded ? (obj[userId] = false) :  (obj[userId] = true);
     setExpandState(obj);
@@ -98,7 +111,6 @@ const NewHome = ({route, navigation}) => {
     const newExpandedRows = isRowExpanded ?
           currentExpandedRows.filter(id => id !== userId) :
           currentExpandedRows.concat(userId);
-
     setExpandedRows(newExpandedRows);
   }
 
@@ -106,10 +118,8 @@ const NewHome = ({route, navigation}) => {
     const tmpdata = resultdata;
     setResultdata([]);
     item.open = !item.open;
-    console.log("tmpdata[index] = ",tmpdata[index].open)
     // tmpdata[index] = 
     setResultdata(tmpdata);
-    console.log('resultdata 1= ',resultdata[index].open)
       // if (index == 0) {
       //   setIscollaps(!iscollaps);
       // }
@@ -199,7 +209,7 @@ const NewHome = ({route, navigation}) => {
       const ndt = nyear + '-' + nmonth + '-' + ndate;
       setOpencalendar(false);
       // setDte(ndt);
-      getDateData(ndt, type, regionType);
+      getDateData(ndt, type, regionType, cityname);
       const selectedmonth = confirmdate.getMonth()
       const new_dtn = ndate + ' ' + months[selectedmonth] + ' ' + nyear;
       setDisplaydt(new_dtn);
@@ -221,7 +231,7 @@ const NewHome = ({route, navigation}) => {
     const logOutuser = async () => {
       try {
           setOpen(false);
-          console.log('navigation loginn')
+          
             await AsyncStorage.removeItem('user').then(() => {
                AsyncStorage.removeItem('usertoken').then(() => {
                   navigation.navigate('login') 
@@ -239,25 +249,64 @@ const NewHome = ({route, navigation}) => {
         } 
     }
 
-    const getRegionData = async (region) => {
-      console.log('region = ',region)
-      console.log('isregion = ',isregion)
-      if((region!=='India' && region !== 'National' && isregion == false ) || region == 'Full'){
-      // if(region=='North' || region == 'East' || region == 'South' || region == 'West' || region == 'Full'){
+    const getRegionData = async (region, sub_region) => {
+      console.log('reportType = ',reportType)
+      if(reportType == "store" && region !== 'Full'){
+        return false;
+      }
+      if (region == 'Full'){
         setIsloading(true);
         setResultdata([]);
-        setRegionType(region)
-        getDateData(confirmdate, type, region);
-        if(region == 'Full'){
-          setIsregion(false);
-        }else{
-          setIsregion(true);
-        } 
+        setResultfulldata({});
+        setRegionType(region);
+        setReqtype('City');
+        setCityname('');
+        selectedCity=''
+        selectedRegion='';
+        mainRegion='';
+        reportType=""
+        getDateData(confirmdate, type, region, '');
+        setIsregion(false);
+        return false
+      }
+      selectedDate=confirmdate;
+      selectedType=type;
+      setSubregion(sub_region)
+      console.log('region = ',region)
+      console.log('subregion = ',subregion)
+      console.log('isregion = ',isregion)
+      if((region!=='India' && region !== 'National' && isregion == false ) || region == 'Full' || subregion == true){
+        
+        // if(region=='North' || region == 'East' || region == 'South' || region == 'West' || region == 'Full'){
+          setIsloading(true);
+          setResultdata([]);
+          setResultfulldata({});
+          setRegionType(region);
+          setReqtype('City');
+          setCityname('');
+          selectedRegion=region;
+          if(mainRegion==''){
+            mainRegion=region;
+          }
+          selectedCity=''
+          console.log('confirmdate, type, region, cityname = ',confirmdate, type, region, cityname)
+          getDateData(confirmdate, type, region, cityname);
+          if(region == 'Full'){
+            setIsregion(false);
+          }else{
+            setIsregion(true);
+          } 
+        
+      }else if(region!=='India' && region !== 'National'){
+        setReqtype('Store');
+        setCityname(region);
+        selectedCity=region
+        getDateData(confirmdate, type, regionType, region);
       }
     }
     
-    const getDateData = async (newdate, ntype, rtype) => {
-      console.log('newdate = ',newdate)
+    const getDateData = async (newdate, ntype, rtype, cityname) => {
+      
       setConfirmdate(newdate)
       const selbusinesstype = await AsyncStorage.getItem('businesstype');
       const nbusiness = JSON.parse(selbusinesstype)
@@ -274,12 +323,17 @@ const NewHome = ({route, navigation}) => {
       // console.log('selbusinesstype 12= ',nbusiness)
       const data = {filter: newtype, date: newdate, business_code: nbusiness.code};
       // console.log('regionType = ',regionType)
-      // console.log('rtype = ',rtype)
-      if (rtype !== "Full"){
+      if (rtype !== "Full" && cityname == ''){
       //   url = conf.apiUrl +'/reports/regional_statistics';
         data['region']=rtype
+        setRegionType(rtype);
       }
-      console.log('data = ',data)
+      if (cityname !== '' && cityname !== undefined){
+        // data['region'] = rtype;
+        data['city']=cityname;
+        setCityname(cityname);
+      }
+      
       let headers = new Headers();
       const token = await AsyncStorage.getItem('usertoken')
       
@@ -291,6 +345,7 @@ const NewHome = ({route, navigation}) => {
       
       
       setResultdata([]);
+      setResultfulldata({});
       fetch(url, {
         method: 'POST', // or 'PUT'
         headers: headers,
@@ -303,8 +358,9 @@ const NewHome = ({route, navigation}) => {
             // console.log('data.results = ',data)
             if(data.type == 'success'){
               if(data.data.length>0){
+                reportType = data.report_type;
                 setResultdata(data.data);
-                console.log(data.data[1])
+                setResultfulldata(data);
               }
               setIsloading(false);
             }else{
@@ -326,12 +382,11 @@ const NewHome = ({route, navigation}) => {
     const changetype = (ntype) => {
       setSelectedtype(ntype);
       setType(ntype.toLowerCase());
-      getDateData(confirmdate, ntype.toLowerCase(), regionType);
+      getDateData(confirmdate, ntype.toLowerCase(), regionType, cityname);
     }
 
     const setbusiness = async () => {
       const selbusinesstype = await AsyncStorage.getItem('businesstype');
-      console.log('selbusinesstype = ',selbusinesstype)
       setBusinesstype(JSON.parse(selbusinesstype));
       
     }
@@ -341,11 +396,58 @@ const NewHome = ({route, navigation}) => {
       });
     }
 
+    
+    const getBackData = async () => {
+      if(reportType == "region"){
+        return true
+      }
+        setIsloading(true);
+        setResultdata([]);
+        setResultfulldata({})
+      if(selectedCity !== ''){
+        setCityname('');
+        selectedCity=''
+        await getDateData(selectedDate, selectedType, selectedRegion, '');
+      }
+      else if(selectedCity == '' && selectedRegion !== '' && selectedRegion !== 'Full'){
+        setCityname('');
+        setIsregion(false);
+        selectedCity='';
+        console.log('reportType = ',reportType)
+        if(reportType == "sub_region"){
+          setRegionType('Full');
+          selectedRegion=mainRegion;
+          mainRegion='';
+        }else if(reportType == "city"){
+          setRegionType('Full');
+          selectedRegion='';
+          mainRegion='';
+        }
+        
+        getDateData(selectedDate, selectedType, selectedRegion, '');
+      }
+      
+      return true
+    }
+
     useEffect(() => {
-      console.log("useEffect")
       setbusiness();
-      getDateData(confirmdate, type, regionType);
-      const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
+      getDateData(confirmdate, type, regionType, cityname);
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', getBackData)
+      //   console.log('cityname = ',cityname);
+      //   // if(cityname !== ''){
+      //   //   setReqtype('City');
+      //     // setCityname('');
+      //     return () => getDateData(confirmdate, type, regionType, '');
+      //   // }
+      // )
+      // if(cityname !== ''){
+      //   setReqtype('City');
+      //   setCityname('');
+      //   return () => getDateData(confirmdate, type, regionType, '');
+      // }else{
+      //   return () => backHandler.remove()
+      // }
       return () => backHandler.remove()
       // setDrawer(DrawerContent(open, setOpen, navigation));
     }, [btype]);
@@ -381,13 +483,13 @@ const NewHome = ({route, navigation}) => {
             
             <Image
                 style={styles.bkking}
-                source={bkking}
+                source={rbaImg}
             />
         </View>
         
         <View style={styles.Home}>
         <View style={styles.Txt142}>
-        {regionType != 'Full' && <TouchableOpacity  onPress={() => getRegionData('Full')}>
+        {regionType != 'Full' && <TouchableOpacity  onPress={() => getRegionData('Full', false)}>
            <IconButton style={{ height:24, width:24, position: "relative", top: -9, left:-7 }} icon="home"></IconButton></TouchableOpacity>}
           <Text style={{color: "rgba(26,26,26,1)"}}>{displaydt}</Text></View>
           <View style={styles.Group66716}>
@@ -426,7 +528,7 @@ const NewHome = ({route, navigation}) => {
           </TouchableOpacity>
             <Text style={styles.Txt702}>
             {resultdata.length > 0 && !isloading ? (
-            resultdata[0].net_stale.val
+            resultfulldata.report_total
           ) : !isloading ? (
             <>0</>
           ) : (
@@ -440,7 +542,7 @@ const NewHome = ({route, navigation}) => {
             style={styles.Vector2}
             source={resultdata.length > 0 && resultdata[0].net_stale.val && !isloading ? (vector_line): (Vector_line_down)}
           /> */}
-            {!isloading && <IconButton onPress={() => getDateData(confirmdate, type, regionType)} style={{ height:24, width:24, position: "absolute", top: -2, right:2 }} icon="refresh"></IconButton>}
+            {!isloading && <IconButton onPress={() => getDateData(confirmdate, type, regionType, cityname)} style={{ height:24, width:24, position: "absolute", top: -2, right:2 }} icon="refresh"></IconButton>}
           </View>
           
           {/* <View style={resultdata.length > 0 && resultdata[0].net_stale.val && !isloading ? (styles.Group66687): (styles.GroupDown)}>
@@ -631,7 +733,13 @@ const NewHome = ({route, navigation}) => {
             </View> */}
             <DataTable rowHeight={30} key={index} >
               <DataTable.Header  style={styles.tableHeader}>
-          <TouchableOpacity onPress={() => getRegionData(item.net_stale.type)} ><Text style={styles.Txt672}>{item.net_stale.type == 'National' ? businesstype.name :item.net_stale.type } </Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => getRegionData(item.net_stale.type, item.sub_region)} ><Text style={styles.Txt672}>{item.net_stale.type == 'National' ? businesstype.name : 
+              
+              
+              item.net_stale.type.length < 20 ? `${item.net_stale.type}` : `${item.net_stale.type.substring(0, 20)}..`
+              
+              
+              } </Text></TouchableOpacity>
               {businesstype.name == 'India' && (
                 <>
               <Text style={styles.Txt673}>Company</Text>
@@ -753,8 +861,8 @@ const NewHome = ({route, navigation}) => {
                 {businesstype.name == 'India' && (
                 <>
                 <DataTable.Cell  style={styles.tableColumn}>
-                <Text style={styles.textSize}>{item.net_stale.coco_val}</Text>
-                {Platform.OS === 'android' && ( Math.sign(item.net_stale.coco_val).toString() === 'NaN'  || Math.sign(item.net_stale.coco_val) >0?
+                <Text style={styles.textSize}>{item.ADS.coco_val}</Text>
+                {Platform.OS === 'android' && ( Math.sign(item.ADS.coco_val).toString() === 'NaN'  || Math.sign(item.ADS.coco_val) >0?
                 (<IconButton
                   // onPress={() => setcollapsVal(index)}
                   style={{position: 'absolute', height:20, width:20, right: 0, top: 2, zIndex:1000}}
@@ -770,8 +878,8 @@ const NewHome = ({route, navigation}) => {
                     />))}
                 </DataTable.Cell>
                 <DataTable.Cell  style={styles.tableColumn}>
-                <Text style={styles.textSize}>{item.net_stale.fofo_val}</Text>
-                {Platform.OS === 'android' && ( Math.sign(item.net_stale.fofo_val).toString() === 'NaN'  || Math.sign(item.net_stale.fofo_val) >0?
+                <Text style={styles.textSize}>{item.ADS.fofo_val}</Text>
+                {Platform.OS === 'android' && ( Math.sign(item.ADS.fofo_val).toString() === 'NaN'  || Math.sign(item.net_stale.fofo_val) >0?
                 (<IconButton
                   // onPress={() => setcollapsVal(index)}
                   style={{position: 'absolute', height:20, width:20, right: 0, top: 2, zIndex:1000}}
@@ -814,8 +922,8 @@ const NewHome = ({route, navigation}) => {
                 {businesstype.name == 'India' && (
                 <>
                 <DataTable.Cell  style={styles.tableColumn}>
-                <Text style={styles.textSize}>{item.net_stale.coco_val}</Text>
-                {Platform.OS === 'android' && ( Math.sign(item.net_stale.coco_val).toString() === 'NaN'  || Math.sign(item.net_stale.coco_val) >0?
+                <Text style={styles.textSize}>{item.SSSG.coco_val}</Text>
+                {Platform.OS === 'android' && ( Math.sign(item.SSSG.coco_val).toString() === 'NaN'  || Math.sign(item.SSSG.coco_val) >0?
                 (<IconButton
                   // onPress={() => setcollapsVal(index)}
                   style={{position: 'absolute', height:20, width:20, right: 0, top: 2, zIndex:1000}}
@@ -831,8 +939,8 @@ const NewHome = ({route, navigation}) => {
                     />))}
                 </DataTable.Cell>
                 <DataTable.Cell  style={styles.tableColumn}>
-                <Text style={styles.textSize}>{item.net_stale.fofo_val}</Text>
-                {Platform.OS === 'android' && ( Math.sign(item.net_stale.fofo_val).toString() === 'NaN'  || Math.sign(item.net_stale.fofo_val) >0?
+                <Text style={styles.textSize}>{item.SSSG.fofo_val}</Text>
+                {Platform.OS === 'android' && ( Math.sign(item.SSSG.fofo_val).toString() === 'NaN'  || Math.sign(item.SSSG.fofo_val) >0?
                 (<IconButton
                   // onPress={() => setcollapsVal(index)}
                   style={{position: 'absolute', height:20, width:20, right: 0, top: 2, zIndex:1000}}
@@ -887,8 +995,8 @@ const NewHome = ({route, navigation}) => {
                   {businesstype.name == 'India' && (
                 <>
                 <DataTable.Cell  style={styles.tableColumn}>
-                <Text style={styles.textSize}>{item.net_stale.coco_val}</Text>
-                {Platform.OS === 'android' && ( Math.sign(item.net_stale.coco_val).toString() === 'NaN'  || Math.sign(item.net_stale.coco_val) >0?
+                <Text style={styles.textSize}>{item.SSTG.coco_val}</Text>
+                {Platform.OS === 'android' && ( Math.sign(item.SSTG.coco_val).toString() === 'NaN'  || Math.sign(item.SSTG.coco_val) >0?
                 (<IconButton
                   // onPress={() => setcollapsVal(index)}
                   style={{position: 'absolute', height:20, width:20, right: 0, top: 2, zIndex:1000}}
@@ -904,8 +1012,8 @@ const NewHome = ({route, navigation}) => {
                     />))}
                 </DataTable.Cell>
                 <DataTable.Cell  style={styles.tableColumn}>
-                <Text style={styles.textSize}>{item.net_stale.fofo_val}</Text>
-                {Platform.OS === 'android' && ( Math.sign(item.net_stale.fofo_val).toString() === 'NaN'  || Math.sign(item.net_stale.fofo_val) >0?
+                <Text style={styles.textSize}>{item.SSTG.fofo_val}</Text>
+                {Platform.OS === 'android' && ( Math.sign(item.SSTG.fofo_val).toString() === 'NaN'  || Math.sign(item.SSTG.fofo_val) >0?
                 (<IconButton
                   // onPress={() => setcollapsVal(index)}
                   style={{position: 'absolute', height:20, width:20, right: 0, top: 2, zIndex:1000}}
@@ -947,8 +1055,8 @@ const NewHome = ({route, navigation}) => {
                   {businesstype.name == 'India' && (
                 <>
                 <DataTable.Cell  style={styles.tableColumn}>
-                <Text style={styles.textSize}>{item.net_stale.coco_val}</Text>
-                {Platform.OS === 'android' && ( Math.sign(item.net_stale.coco_val).toString() === 'NaN'  || Math.sign(item.net_stale.coco_val) >0?
+                <Text style={styles.textSize}>{item.ADT.coco_val}</Text>
+                {Platform.OS === 'android' && ( Math.sign(item.ADT.coco_val).toString() === 'NaN'  || Math.sign(item.ADT.coco_val) >0?
                 (<IconButton
                   // onPress={() => setcollapsVal(index)}
                   style={{position: 'absolute', height:20, width:20, right: 0, top: 2, zIndex:1000}}
@@ -964,8 +1072,8 @@ const NewHome = ({route, navigation}) => {
                     />))}
                 </DataTable.Cell>
                 <DataTable.Cell  style={styles.tableColumn}>
-                <Text style={styles.textSize}>{item.net_stale.fofo_val}</Text>
-                {Platform.OS === 'android' && ( Math.sign(item.net_stale.fofo_val).toString() === 'NaN'  || Math.sign(item.net_stale.fofo_val) >0?
+                <Text style={styles.textSize}>{item.ADT.fofo_val}</Text>
+                {Platform.OS === 'android' && ( Math.sign(item.ADT.fofo_val).toString() === 'NaN'  || Math.sign(item.ADT.fofo_val) >0?
                 (<IconButton
                   // onPress={() => setcollapsVal(index)}
                   style={{position: 'absolute', height:20, width:20, right: 0, top: 2, zIndex:1000}}
@@ -1007,8 +1115,8 @@ const NewHome = ({route, navigation}) => {
                   {businesstype.name == 'India' && (
                 <>
                 <DataTable.Cell  style={styles.tableColumn}>
-                <Text style={styles.textSize}>{item.net_stale.coco_val}</Text>
-                {Platform.OS === 'android' && ( Math.sign(item.net_stale.coco_val).toString() === 'NaN'  || Math.sign(item.net_stale.coco_val) >0?
+                <Text style={styles.textSize}>{item.APC.coco_val}</Text>
+                {Platform.OS === 'android' && ( Math.sign(item.APC.coco_val).toString() === 'NaN'  || Math.sign(item.APC.coco_val) >0?
                 (<IconButton
                   // onPress={() => setcollapsVal(index)}
                   style={{position: 'absolute', height:20, width:20, right: 0, top: 2, zIndex:1000}}
@@ -1024,8 +1132,8 @@ const NewHome = ({route, navigation}) => {
                     />))}
                 </DataTable.Cell>
                 <DataTable.Cell  style={styles.tableColumn}>
-                <Text style={styles.textSize}>{item.net_stale.fofo_val}</Text>
-                {Platform.OS === 'android' && ( Math.sign(item.net_stale.fofo_val).toString() === 'NaN'  || Math.sign(item.net_stale.fofo_val) >0?
+                <Text style={styles.textSize}>{item.APC.fofo_val}</Text>
+                {Platform.OS === 'android' && ( Math.sign(item.APC.fofo_val).toString() === 'NaN'  || Math.sign(item.APC.fofo_val) >0?
                 (<IconButton
                   // onPress={() => setcollapsVal(index)}
                   style={{position: 'absolute', height:20, width:20, right: 0, top: 2, zIndex:1000}}
@@ -1067,8 +1175,8 @@ const NewHome = ({route, navigation}) => {
                   {businesstype.name == 'India' && (
                 <>
                 <DataTable.Cell  style={styles.tableColumn}>
-                <Text style={styles.textSize}>{item.net_stale.coco_val}</Text>
-                {Platform.OS === 'android' && ( Math.sign(item.net_stale.coco_val).toString() === 'NaN'  || Math.sign(item.net_stale.coco_val) >0?
+                <Text style={styles.textSize}>{item.WOWSSSG.coco_val}</Text>
+                {Platform.OS === 'android' && ( Math.sign(item.WOWSSSG.coco_val).toString() === 'NaN'  || Math.sign(item.WOWSSSG.coco_val) >0?
                 (<IconButton
                   // onPress={() => setcollapsVal(index)}
                   style={{position: 'absolute', height:20, width:20, right: 0, top: 2, zIndex:1000}}
@@ -1084,8 +1192,8 @@ const NewHome = ({route, navigation}) => {
                     />))}
                 </DataTable.Cell>
                 <DataTable.Cell  style={styles.tableColumn}>
-                <Text style={styles.textSize}>{item.net_stale.fofo_val}</Text>
-                {Platform.OS === 'android' && ( Math.sign(item.net_stale.fofo_val).toString() === 'NaN'  || Math.sign(item.net_stale.fofo_val) >0?
+                <Text style={styles.textSize}>{item.WOWSSSG.fofo_val}</Text>
+                {Platform.OS === 'android' && ( Math.sign(item.WOWSSSG.fofo_val).toString() === 'NaN'  || Math.sign(item.WOWSSSG.fofo_val) >0?
                 (<IconButton
                   // onPress={() => setcollapsVal(index)}
                   style={{position: 'absolute', height:20, width:20, right: 0, top: 2, zIndex:1000}}
@@ -1127,8 +1235,8 @@ const NewHome = ({route, navigation}) => {
                   {businesstype.name == 'India' && (
                 <>
                 <DataTable.Cell  style={styles.tableColumn}>
-                <Text style={styles.textSize}>{item.net_stale.coco_val}</Text>
-                {Platform.OS === 'android' && ( Math.sign(item.net_stale.coco_val).toString() === 'NaN'  || Math.sign(item.net_stale.coco_val) >0?
+                <Text style={styles.textSize}>{item.MOMSSSG.coco_val}</Text>
+                {Platform.OS === 'android' && ( Math.sign(item.MOMSSSG.coco_val).toString() === 'NaN'  || Math.sign(item.MOMSSSG.coco_val) >0?
                 (<IconButton
                   // onPress={() => setcollapsVal(index)}
                   style={{position: 'absolute', height:20, width:20, right: 0, top: 2, zIndex:1000}}
@@ -1144,8 +1252,8 @@ const NewHome = ({route, navigation}) => {
                     />))}
                 </DataTable.Cell>
                 <DataTable.Cell  style={styles.tableColumn}>
-                <Text style={styles.textSize}>{item.net_stale.fofo_val}</Text>
-                {Platform.OS === 'android' && ( Math.sign(item.net_stale.fofo_val).toString() === 'NaN'  || Math.sign(item.net_stale.fofo_val) >0?
+                <Text style={styles.textSize}>{item.MOMSSSG.fofo_val}</Text>
+                {Platform.OS === 'android' && ( Math.sign(item.MOMSSSG.fofo_val).toString() === 'NaN'  || Math.sign(item.MOMSSSG.fofo_val) >0?
                 (<IconButton
                   // onPress={() => setcollapsVal(index)}
                   style={{position: 'absolute', height:20, width:20, right: 0, top: 2, zIndex:1000}}
@@ -1187,8 +1295,8 @@ const NewHome = ({route, navigation}) => {
                   {businesstype.name == 'India' && (
                 <>
                 <DataTable.Cell  style={styles.tableColumn}>
-                <Text style={styles.textSize}>{item.net_stale.coco_val}</Text>
-                {Platform.OS === 'android' && ( Math.sign(item.net_stale.coco_val).toString() === 'NaN'  || Math.sign(item.net_stale.coco_val) >0?
+                <Text style={styles.textSize}>{item.DINEINNETSALES.coco_val}</Text>
+                {Platform.OS === 'android' && ( Math.sign(item.DINEINNETSALES.coco_val).toString() === 'NaN'  || Math.sign(item.DINEINNETSALES.coco_val) >0?
                 (<IconButton
                   // onPress={() => setcollapsVal(index)}
                   style={{position: 'absolute', height:20, width:20, right: 0, top: 2, zIndex:1000}}
@@ -1204,8 +1312,8 @@ const NewHome = ({route, navigation}) => {
                     />))}
                 </DataTable.Cell>
                 <DataTable.Cell  style={styles.tableColumn}>
-                <Text style={styles.textSize}>{item.net_stale.fofo_val}</Text>
-                {Platform.OS === 'android' && ( Math.sign(item.net_stale.fofo_val).toString() === 'NaN'  || Math.sign(item.net_stale.fofo_val) >0?
+                <Text style={styles.textSize}>{item.DINEINNETSALES.fofo_val}</Text>
+                {Platform.OS === 'android' && ( Math.sign(item.DINEINNETSALES.fofo_val).toString() === 'NaN'  || Math.sign(item.DINEINNETSALES.fofo_val) >0?
                 (<IconButton
                   // onPress={() => setcollapsVal(index)}
                   style={{position: 'absolute', height:20, width:20, right: 0, top: 2, zIndex:1000}}
@@ -1247,8 +1355,8 @@ const NewHome = ({route, navigation}) => {
                   {businesstype.name == 'India' && (
                 <>
                 <DataTable.Cell  style={styles.tableColumn}>
-                <Text style={styles.textSize}>{item.net_stale.coco_val}</Text>
-                {Platform.OS === 'android' && ( Math.sign(item.net_stale.coco_val).toString() === 'NaN'  || Math.sign(item.net_stale.coco_val) >0?
+                <Text style={styles.textSize}>{item.DINEINADS.coco_val}</Text>
+                {Platform.OS === 'android' && ( Math.sign(item.DINEINADS.coco_val).toString() === 'NaN'  || Math.sign(item.DINEINADS.coco_val) >0?
                 (<IconButton
                   // onPress={() => setcollapsVal(index)}
                   style={{position: 'absolute', height:20, width:20, right: 0, top: 2, zIndex:1000}}
@@ -1264,8 +1372,8 @@ const NewHome = ({route, navigation}) => {
                     />))}
                 </DataTable.Cell>
                 <DataTable.Cell  style={styles.tableColumn}>
-                <Text style={styles.textSize}>{item.net_stale.fofo_val}</Text>
-                {Platform.OS === 'android' && ( Math.sign(item.net_stale.fofo_val).toString() === 'NaN'  || Math.sign(item.net_stale.fofo_val) >0?
+                <Text style={styles.textSize}>{item.DINEINADS.fofo_val}</Text>
+                {Platform.OS === 'android' && ( Math.sign(item.DINEINADS.fofo_val).toString() === 'NaN'  || Math.sign(item.DINEINADS.fofo_val) >0?
                 (<IconButton
                   // onPress={() => setcollapsVal(index)}
                   style={{position: 'absolute', height:20, width:20, right: 0, top: 2, zIndex:1000}}
@@ -1307,8 +1415,8 @@ const NewHome = ({route, navigation}) => {
                   {businesstype.name == 'India' && (
                 <>
                 <DataTable.Cell  style={styles.tableColumn}>
-                <Text style={styles.textSize}>{item.net_stale.coco_val}</Text>
-                {Platform.OS === 'android' && ( Math.sign(item.net_stale.coco_val).toString() === 'NaN'  || Math.sign(item.net_stale.coco_val) >0?
+                <Text style={styles.textSize}>{item.DELIVERYPERCENT.coco_val}</Text>
+                {Platform.OS === 'android' && ( Math.sign(item.DELIVERYPERCENT.coco_val).toString() === 'NaN'  || Math.sign(item.DELIVERYPERCENT.coco_val) >0?
                 (<IconButton
                   // onPress={() => setcollapsVal(index)}
                   style={{position: 'absolute', height:20, width:20, right: 0, top: 2, zIndex:1000}}
@@ -1324,8 +1432,8 @@ const NewHome = ({route, navigation}) => {
                     />))}
                 </DataTable.Cell>
                 <DataTable.Cell  style={styles.tableColumn}>
-                <Text style={styles.textSize}>{item.net_stale.fofo_val}</Text>
-                {Platform.OS === 'android' && ( Math.sign(item.net_stale.fofo_val).toString() === 'NaN'  || Math.sign(item.net_stale.fofo_val) >0?
+                <Text style={styles.textSize}>{item.DELIVERYPERCENT.fofo_val}</Text>
+                {Platform.OS === 'android' && ( Math.sign(item.DELIVERYPERCENT.fofo_val).toString() === 'NaN'  || Math.sign(item.DELIVERYPERCENT.fofo_val) >0?
                 (<IconButton
                   // onPress={() => setcollapsVal(index)}
                   style={{position: 'absolute', height:20, width:20, right: 0, top: 2, zIndex:1000}}
@@ -1611,7 +1719,7 @@ const styles = StyleSheet.create({
     fontSize:10,
   },
   textSize: {
-    fontSize:12,
+    fontSize:9,
   },
   tableColumn:{
     backgroundColor: '#FFFFFF',
@@ -1677,12 +1785,12 @@ const styles = StyleSheet.create({
         // display: "flex",
         // flexDirection: "row",
         position: "absolute",
-        top: 50,
-        left:'44.51%',
-        right:'44.51%',
+        top: 20,
+        left:'38.51%',
+        right:'34.51%',
         // none: "0px",
-        width: 45.07,
-        height: 43.82,
+        width: 91.07,
+        height: 102.28,
         alignItems: 'center',
         justifyContent: 'center',
         marginLeft:'auto',
@@ -2367,37 +2475,39 @@ const styles = StyleSheet.create({
         height: 37,
       },
       Txt672: {
-        width:165,
-        fontSize: 14,
+        minWidth:"52%",
+        fontSize: 12,
         // borderColor:'red',
         // borderWidth:1,
          // fontFamily: "Nunito, sans-serif",
-        fontWeight: "600",
+        fontWeight: "500",
         color: "rgba(244,130,51,1)",
         textAlign: "left",
-        justifyContent: "flex-end",
+        justifyContent: "flex-start",
         // marginRight: 212,
         marginTop:10
       },
       Txt673:{
-        width:70,
+        width:"26%",
         marginTop:14,
+        // borderColor:'green',
+        // borderWidth:1,
         // marginLeft:'40%',
         fontSize: 10,
          // fontFamily: "Nunito, sans-serif",
         fontWeight: "400",
         color: "rgba(244,130,51,1)",
         textAlign: "left",
-        justifyContent: "flex-end",
+        justifyContent: "flex-start",
       },
       Txt674:{
         marginTop:14,
-        marginLeft:'5%',
+        // marginLeft:'5%',
         fontSize: 10,
          // fontFamily: "Nunito, sans-serif",
         fontWeight: "400",
         color: "rgba(244,130,51,1)",
-        textAlign: "right"
+        textAlign: "left"
       },
       Fill7: {
         width: 11.31,

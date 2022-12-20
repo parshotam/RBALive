@@ -7,6 +7,7 @@ import { Button } from 'react-native-paper';
 import AsyncStorage from '@react-native-community/async-storage';
 import bkimage from '../../assets/img/bkimage.png';
 import bkking from '../../assets/Burger-King.png';
+import rbaImg from '../../assets/rba-R-02.png';
 import config from '../../config'
 
 const SignIn = ({navigation}) => {
@@ -94,7 +95,7 @@ const SignIn = ({navigation}) => {
           <View style={styles.logoimg}>
         <Image
           style={styles.Group65818}
-          source={bkking}
+          source={rbaImg}
         />
         </View>
         </ImageBackground>
@@ -223,8 +224,8 @@ const styles = StyleSheet.create({
     height: 301,
   },
   Group65818: {
-    width: 115.43,
-    height: 117.55,
+    width: 165.43,
+    height: 167.55,
     marginLeft:'auto', 
     marginRight:'auto',
   },

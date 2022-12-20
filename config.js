@@ -3,7 +3,7 @@ export default () => {
         return {
             // name: myValue,
             version: "1.0.0",
-            apiUrl:'https://bkadmin.in/rbauat'
+            apiUrl:'https://bkadmin.in/rba'
             // All values in extra will be passed to your app.
             // extra: {
             //     fact: "dogs are cool"
@@ -13,7 +13,7 @@ export default () => {
         return {
             // name: myValue,
             version: "1.0.0",
-            apiUrl:'https://bkadmin.in/rbauat'
+            apiUrl:'https://bkadmin.in/rba'
             // All values in extra will be passed to your app.
             // extra: {
             //     fact: "kittens are cool"
