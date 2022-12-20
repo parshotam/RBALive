@@ -8,12 +8,12 @@
         "source": "/Users/apple/RBALive/android/app/src/main/res/drawable-xhdpi/node_modules_reactnativedropdownmenu_img_menu_check.png"
     },
     {
-        "merged": "/Users/apple/RBALive/android/app/build/intermediates/merged_res/debug/mipmap-hdpi_ic_launcher_round.png.flat",
-        "source": "/Users/apple/RBALive/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png"
-    },
-    {
         "merged": "/Users/apple/RBALive/android/app/build/intermediates/merged_res/debug/drawable-mdpi_assets_img_user_img.png.flat",
         "source": "/Users/apple/RBALive/android/app/src/main/res/drawable-mdpi/assets_img_user_img.png"
+    },
+    {
+        "merged": "/Users/apple/RBALive/android/app/build/intermediates/merged_res/debug/mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "/Users/apple/RBALive/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png"
     },
     {
         "merged": "/Users/apple/RBALive/android/app/build/intermediates/merged_res/debug/drawable-xxhdpi_node_modules_reactnavigation_elements_src_assets_backicon.png.flat",
@@ -154,6 +154,10 @@
     {
         "merged": "/Users/apple/RBALive/android/app/build/intermediates/merged_res/debug/drawable-mdpi_node_modules_reactnativedropdownmenu_img_dropdown_arrow.png.flat",
         "source": "/Users/apple/RBALive/android/app/src/main/res/drawable-mdpi/node_modules_reactnativedropdownmenu_img_dropdown_arrow.png"
+    },
+    {
+        "merged": "/Users/apple/RBALive/android/app/build/intermediates/merged_res/debug/drawable-mdpi_assets_img_popeyes.jpeg.flat",
+        "source": "/Users/apple/RBALive/android/app/src/main/res/drawable-mdpi/assets_img_popeyes.jpeg"
     },
     {
         "merged": "/Users/apple/RBALive/android/app/build/intermediates/merged_res/debug/drawable-mdpi_assets_img_bkimage.png.flat",

@@ -1350,6 +1350,7 @@ drawable assets_img_maps_icon
 drawable assets_img_menu_new
 drawable assets_img_person_icon
 drawable assets_img_pope
+drawable assets_img_popeyes
 drawable assets_img_right_icon
 drawable assets_img_sales_icon
 drawable assets_img_settings
