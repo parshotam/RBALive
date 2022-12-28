@@ -121,7 +121,7 @@ const Login = ({navigation}) => {
          AsyncStorage.setItem('userdetails', data.message);
          AsyncStorage.setItem('useremail', data.message.email);
          AsyncStorage.setItem('usertoken', data.message.token)
-         navigation.navigate('home') 
+         navigation.navigate('selectbrand') 
         }else{
          setErrmsg(data.message)
          setIsopen(true)

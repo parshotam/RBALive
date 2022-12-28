@@ -105,15 +105,15 @@ const SelectBrand = ({navigation}) => {
                 <View style={styles.brandround}>
                 <Image
                     style={styles.bkking}
-                    source={bkking}
+                    source={{"uri": item.image}}
                 />
                 </View>
-                <Text style={styles.brandtype}>{item.name}</Text>
+                <Text style={styles.brandtype}>{item.name} </Text>
             </View>
             </TouchableOpacity>
         )
         })}
-        <TouchableOpacity  >
+        {/* <TouchableOpacity  >
             <View style={styles.selectbrand}>
                 <View style={styles.brandround}>
                 <Image
@@ -122,7 +122,7 @@ const SelectBrand = ({navigation}) => {
                 />
                 </View>
             </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         
             {/* <Text style={styles.brandtype}>India Limited</Text> */}
             {/* <View style={styles.selectbrand}>

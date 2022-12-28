@@ -73,7 +73,7 @@ const SignIn = ({navigation}) => {
         const jsonValue = await AsyncStorage.getItem('user')
         
         if(jsonValue != null && jsonValue != '' && jsonValue != undefined){
-          navigation.navigate('home') 
+          navigation.navigate('selectbrand') 
         }
         return jsonValue != null ? jsonValue : null;
       } catch(e) {

@@ -31,6 +31,8 @@ import { useFocusEffect } from '@react-navigation/native';
 
 
 var datatype = [['Day','Week', 'Month', 'Quarterly', 'Year']]
+var quaterdatatype = [['Quarter','Q1', 'Q2', 'Q3', 'Q4']]
+var yeardatatype = [['Year','2021', '2022']]
 
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 var date = new Date().getDate(); //Current Date
@@ -342,7 +344,7 @@ const NewHome = ({route, navigation}) => {
       headers.append('Authorization', 'Bearer '+ token);
       headers.append('x-access-token', token);
       headers.append('token', token);
-      
+      console.log('data = ',data)
       
       setResultdata([]);
       setResultfulldata({});
@@ -423,7 +425,6 @@ const NewHome = ({route, navigation}) => {
           selectedRegion='';
           mainRegion='';
         }
-        
         getDateData(selectedDate, selectedType, selectedRegion, '');
       }
       
@@ -489,6 +490,8 @@ const NewHome = ({route, navigation}) => {
         
         <View style={styles.Home}>
         <View style={styles.Txt142}>
+        {reportType != "region" && <TouchableOpacity  onPress={() => getBackData()}>
+           <IconButton style={{ height:24, width:20, position: "relative", top: -8, left:-7 }} icon="chevron-left"></IconButton></TouchableOpacity>}
         {regionType != 'Full' && <TouchableOpacity  onPress={() => getRegionData('Full', false)}>
            <IconButton style={{ height:24, width:24, position: "relative", top: -9, left:-7 }} icon="home"></IconButton></TouchableOpacity>}
           <Text style={{color: "rgba(26,26,26,1)"}}>{displaydt}</Text></View>
@@ -508,11 +511,7 @@ const NewHome = ({route, navigation}) => {
               position: "relative", top:1, left:-15, marginRight:30,  width:170, zIndex:1000,  marginTop:1, marginBottom:1, paddingBottom:1, paddingTop:0}}
             >
             </DropdownMenu>
-            {/* <Text style={styles.Txt736}>Day</Text> */}
-            {/* <Image
-              style={styles.Fill6}
-              source={down_icon}
-            /> */}
+            
           </View>
           <TouchableOpacity style={styles.IconlyBoldCalendar} onPress={() => {setOpencalendar(true); closeDropDown()}}>
           <Image
@@ -520,10 +519,66 @@ const NewHome = ({route, navigation}) => {
             source={calendar}
           /></TouchableOpacity>
           
+        <View>
+        {/* <View style={styles.Group66720}>
+          <DropdownMenu
+            ref={childRef}
+            // visible={isopendropdown}
+            // bannerAction={isopendropdown}
+            // openOrClosePanel={() => isopendropdown}
+            style={{ height:10, width:174, padding:0,margin:0}}
+            bgColor={'transparent'}
+            tintColor={'#000000'}
+            activityTintColor={'#f5a04c'}
+            handler={(selection, row) => changetype(datatype[selection][row])}
+            data={quaterdatatype}
+            optionTextStyle={{width:170, 
+              position: "relative", top:1, left:-15, marginRight:30,  width:170, zIndex:1000,  marginTop:1, marginBottom:1, paddingBottom:1, paddingTop:0}}
+            >
+            </DropdownMenu>
+        </View>
+        <View style={styles.Group66721}>
+          <DropdownMenu
+            ref={childRef}
+            // visible={isopendropdown}
+            // bannerAction={isopendropdown}
+            // openOrClosePanel={() => isopendropdown}
+            style={{ height:10, width:174, padding:0,margin:0}}
+            bgColor={'transparent'}
+            tintColor={'#000000'}
+            activityTintColor={'#f5a04c'}
+            handler={(selection, row) => changetype(datatype[selection][row])}
+            data={yeardatatype}
+            optionTextStyle={{width:170, 
+              position: "relative", top:1, left:-15, marginRight:30,  width:170, zIndex:1000,  marginTop:1, marginBottom:1, paddingBottom:1, paddingTop:0}}
+            >
+            </DropdownMenu>
+        </View> */}
+        {/* <View style={styles.Group66722}>
+          <DropdownMenu
+            ref={childRef}
+            // visible={isopendropdown}
+            // bannerAction={isopendropdown}
+            // openOrClosePanel={() => isopendropdown}
+            style={{ height:10, width:174, padding:0,margin:0}}
+            bgColor={'transparent'}
+            tintColor={'#000000'}
+            activityTintColor={'#f5a04c'}
+            handler={(selection, row) => changetype(datatype[selection][row])}
+            data={datatype}
+            optionTextStyle={{width:170, 
+              position: "relative", top:1, left:-15, marginRight:30,  width:170, zIndex:1000,  marginTop:1, marginBottom:1, paddingBottom:1, paddingTop:0}}
+            >
+            </DropdownMenu>
+            
+          </View> */}
+        </View>
+
+        
           {/* <View style={{width:'100%', height:40, marginTop:10, padding:5, color:'#fff', backgroundColor:'black'}}>
         <Text style={{color:'#fff',}}>Could not connect to internet</Text>
         </View> */}
-          <View style={{marginTop:25, }}>
+          <View style={{marginTop:20, }}>
           <TouchableOpacity  ><Text style={styles.Txt656}>Net Sales</Text> 
           </TouchableOpacity>
             <Text style={styles.Txt702}>
@@ -542,6 +597,40 @@ const NewHome = ({route, navigation}) => {
             style={styles.Vector2}
             source={resultdata.length > 0 && resultdata[0].net_stale.val && !isloading ? (vector_line): (Vector_line_down)}
           /> */}
+            {/* <View style={styles.Group66720}>
+              <DropdownMenu
+                ref={childRef}
+                // visible={isopendropdown}
+                // bannerAction={isopendropdown}
+                // openOrClosePanel={() => isopendropdown}
+                style={{ height:10, width:174, padding:0,margin:0}}
+                bgColor={'transparent'}
+                tintColor={'#000000'}
+                activityTintColor={'#f5a04c'}
+                handler={(selection, row) => changetype(datatype[selection][row])}
+                data={quaterdatatype}
+                optionTextStyle={{width:170, 
+                  position: "relative", top:1, left:-15, marginRight:30,  width:170, zIndex:1000,  marginTop:1, marginBottom:1, paddingBottom:1, paddingTop:0}}
+                >
+                </DropdownMenu>
+            </View>
+            <View style={styles.Group66721}>
+              <DropdownMenu
+                ref={childRef}
+                // visible={isopendropdown}
+                // bannerAction={isopendropdown}
+                // openOrClosePanel={() => isopendropdown}
+                style={{ height:10, width:174, padding:0,margin:0}}
+                bgColor={'transparent'}
+                tintColor={'#000000'}
+                activityTintColor={'#f5a04c'}
+                handler={(selection, row) => changetype(datatype[selection][row])}
+                data={yeardatatype}
+                optionTextStyle={{width:170, 
+                  position: "relative", top:1, left:-15, marginRight:30,  width:170, zIndex:1000,  marginTop:1, marginBottom:1, paddingBottom:1, paddingTop:0}}
+                >
+                </DropdownMenu>
+            </View> */}
             {!isloading && <IconButton onPress={() => getDateData(confirmdate, type, regionType, cityname)} style={{ height:24, width:24, position: "absolute", top: -2, right:2 }} icon="refresh"></IconButton>}
           </View>
           
@@ -1463,6 +1552,7 @@ const NewHome = ({route, navigation}) => {
         maximumDate={new Date()}
         textColor="#f5a04c"
         color="#f5a04c"
+        minimumDate={new Date("2021-01-01")}
         onConfirm={onConfirmSingle}
         onCancel={onDismissSingle}
       />
@@ -1936,6 +2026,63 @@ const styles = StyleSheet.create({
         borderStyle: "solid",
         borderColor: "rgba(26,26,26,1)",
         width: 104,
+        height: 27,
+        zIndex:1000
+      },
+      Group66720: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        position: "absolute",
+        top: 8,
+        right: '35%',
+        paddingTop: 6,
+        paddingBottom: 4,
+        paddingLeft: 10,
+        paddingRight: 9,
+        borderRadius: 4,
+        borderWidth: 0.5,
+        borderStyle: "solid",
+        borderColor: "rgba(26,26,26,1)",
+        width: 80,
+        height: 27,
+        zIndex:1000
+      },
+      Group66721: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        position: "absolute",
+        top: 8,
+        right: '13%',
+        paddingTop: 6,
+        paddingBottom: 4,
+        paddingLeft: 10,
+        paddingRight: 9,
+        borderRadius: 4,
+        borderWidth: 0.5,
+        borderStyle: "solid",
+        borderColor: "rgba(26,26,26,1)",
+        width: 60,
+        height: 27,
+        zIndex:1000
+      },
+      Group66722: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        position: "absolute",
+        top: 8,
+        left: '70%',
+        paddingTop: 6,
+        paddingBottom: 4,
+        paddingLeft: 10,
+        paddingRight: 9,
+        borderRadius: 4,
+        borderWidth: 0.5,
+        borderStyle: "solid",
+        borderColor: "rgba(26,26,26,1)",
+        width: 55,
         height: 27,
         zIndex:1000
       },
